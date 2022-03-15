@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import scipy.signal as signal
 
 
-def calcStdSignal(participant,eeg_signal):
+def calcVarSignal(participant,eeg_signal):
     if eeg_signal in ("rawvep", "rawp300"):
         evoked_potential = Evoked_potentials(participant,eeg_signal)
         eeg = evoked_potential.eeg
@@ -22,8 +22,8 @@ def calcStdSignal(participant,eeg_signal):
         wanted_task = tasks_eeg(participant,eeg_signal)
         eeg = wanted_task.ch1
     
-    std_signal = np.std(eeg)
-    return std_signal
+    var_signal = np.var(eeg)
+    return var_signal
 
     
 def plotPSD(participant,ep):
@@ -49,8 +49,8 @@ power_p300 = plotPSD("004","rawp300")
 power_vep = plotPSD("004","rawvep")
 signal_value = power_p300 - power_vep
 
-noise_vep = calcStdSignal("004", "rawvep")
-noise_p300 = calcStdSignal("004", "rawp300")
+noise_vep = calcVarSignal("004", "rawvep")
+noise_p300 = calcVarSignal("004", "rawp300")
 
 #SNR_vep = signal_value**2 / noise_vep**2
 #SNR_p300 = signal_value**2 / noise_p300**2
@@ -58,12 +58,12 @@ SNR_vep = 10e-6**2 / noise_vep**2
 SNR_p300 = 10e-6**2 / noise_p300**2
 
 
-noise_jawclench = calcStdSignal("004", "jawclench")
+noise_jawclench = calcVarSignal("004", "jawclench")
 #SNR_jawclench = signal_value**2 / noise_jawclench**2
 SNR_jawclench = 10e-6**2 / noise_jawclench**2
 
 
-def calcMaxSTD(participant,eeg_signal):
+def calcMaxVar(participant,eeg_signal):
     if eeg_signal in ("rawvep", "rawp300"):
         evoked_potential = Evoked_potentials(participant,eeg_signal)
         eeg = evoked_potential.eeg
@@ -74,16 +74,16 @@ def calcMaxSTD(participant,eeg_signal):
         eeg = wanted_task.ch1
         Fs = wanted_task.Fs
     
-    #calculate moving standard deviation and keep max value
-    std_list = []
+    #calculate moving variance and keep median value
+    var_list = []
     for i in range(len(eeg)):
-        std = np.std(eeg[i:(Fs*2)+i])
-        std_list.append(std)
+        var = np.var(eeg[i:(Fs*2)+i])
+        var_list.append(var)
         
-    theta_max = max(std_list)
+    theta_max = np.median(var_list)
     return theta_max
 
-def calcMinSTD(participant,eeg_signal):
+def calcMinVar(participant,eeg_signal):
     if eeg_signal in ("rawvep", "rawp300"):
         evoked_potential = Evoked_potentials(participant,eeg_signal)
         eeg = evoked_potential.eeg
@@ -95,20 +95,20 @@ def calcMinSTD(participant,eeg_signal):
         Fs = wanted_task.Fs
     
     #calculate moving standard deviation and keep min value
-    std_list = []
+    var_list = []
     for i in range(len(eeg)):
-        std = np.std(eeg[i:(Fs*2)+i])
+        var = np.var(eeg[i:(Fs*2)+i])
         # since the first 1500 values are 0, the stds at the start will be 0
         # we want to remove these
-        if std > 0:
-            std_list.append(std)
+        if var > 0:
+            var_list.append(var)
             
-    theta_min = min(std_list)
+    theta_min = min(var_list)
     return theta_min
 
 
 def calcRho(participant,eeg_signal):
-    rho = np.sqrt(calcMaxSTD(participant,eeg_signal) / calcMinSTD(participant,eeg_signal))
+    rho = np.sqrt(calcMaxVar(participant,eeg_signal) / calcMinVar(participant,eeg_signal))
     return rho
 
 def calcNoiseWall(participant,eeg_signal):
