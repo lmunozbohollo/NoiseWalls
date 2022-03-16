@@ -11,6 +11,7 @@ from Filter_signals import tasks_eeg
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.signal as signal
+import math
 
 
 def calcVarSignal(participant,eeg_signal):
@@ -44,7 +45,9 @@ def plotPSD(participant,ep):
     return psd_peak
 
 def findSNR(participant,eeg_signal):
-    SNR = 10e-6**2 / calcVarSignal(participant,eeg_signal)
+    #SNR = 10e-6**2 / calcVarSignal(participant,eeg_signal)
+    SNR = 10**2 / calcVarSignal(participant,eeg_signal)
+    SNR = 10*math.log10(SNR)
     return SNR
 
 # the difference between both will be the power of the voluntary eeg
@@ -76,7 +79,7 @@ def calcMaxVar(participant,eeg_signal):
     
     #calculate moving variance and keep median value
     var_list = []
-    for i in range(len(eeg)/Fs):
+    for i in range(len(eeg)):
         var = np.var(eeg[i:(Fs*2)+i])
         var_list.append(var)
         
@@ -113,6 +116,7 @@ def calcRho(participant,eeg_signal):
 
 def calcNoiseWall(participant,eeg_signal):
     NoiseWall = calcRho(participant,eeg_signal) - (1 / calcRho(participant,eeg_signal))
+    NoiseWall = 10*math.log10(NoiseWall)
     return NoiseWall
 
 rho_vep = calcRho('004', 'rawvep')
