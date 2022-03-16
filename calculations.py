@@ -43,24 +43,24 @@ def plotPSD(participant,ep):
     psd_peak = max(psd)
     return psd_peak
 
+def findSNR(participant,eeg_signal):
+    SNR = 10e-6**2 / calcVarSignal(participant,eeg_signal)
+    return SNR
 
 # the difference between both will be the power of the voluntary eeg
-power_p300 = plotPSD("004","rawp300")
-power_vep = plotPSD("004","rawvep")
-signal_value = power_p300 - power_vep
+#power_p300 = plotPSD("004","rawp300")
+#power_vep = plotPSD("004","rawvep")
+#signal_value = power_p300 - power_vep
 
-noise_vep = calcVarSignal("004", "rawvep")
-noise_p300 = calcVarSignal("004", "rawp300")
 
 #SNR_vep = signal_value**2 / noise_vep**2
 #SNR_p300 = signal_value**2 / noise_p300**2
-SNR_vep = 10e-6**2 / noise_vep**2
-SNR_p300 = 10e-6**2 / noise_p300**2
+SNR_vep = findSNR('004','rawvep')
+SNR_p300 = findSNR('004','rawp300')
 
 
-noise_jawclench = calcVarSignal("004", "jawclench")
 #SNR_jawclench = signal_value**2 / noise_jawclench**2
-SNR_jawclench = 10e-6**2 / noise_jawclench**2
+SNR_jawclench = findSNR('004','jawclench')
 
 
 def calcMaxVar(participant,eeg_signal):
@@ -76,7 +76,7 @@ def calcMaxVar(participant,eeg_signal):
     
     #calculate moving variance and keep median value
     var_list = []
-    for i in range(len(eeg)):
+    for i in range(len(eeg)/Fs):
         var = np.var(eeg[i:(Fs*2)+i])
         var_list.append(var)
         
@@ -94,7 +94,7 @@ def calcMinVar(participant,eeg_signal):
         eeg = wanted_task.ch1
         Fs = wanted_task.Fs
     
-    #calculate moving standard deviation and keep min value
+    #calculate moving variance and keep min value
     var_list = []
     for i in range(len(eeg)):
         var = np.var(eeg[i:(Fs*2)+i])
