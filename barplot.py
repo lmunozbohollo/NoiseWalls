@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Mar 8 17:25:37 2022
+Created on Wed Mar 16 10:25:37 2022
 
 @author: luciamb
 """
@@ -29,4 +29,32 @@ for task in TASKS:
     NW = calcNoiseWall('004',task)
     NWs.append(NW)
     
+
+n_groups = len(TASKS)
+
+
+# create plot
+fig, ax = plt.subplots()
+index = np.arange(n_groups)
+bar_width = 0.35
+opacity = 0.8
+
+rects1 = plt.bar(index, SNRs, bar_width,
+alpha=opacity,
+color='r',
+label='SNR')
+
+rects2 = plt.bar(index + bar_width, NWs, bar_width,
+alpha=opacity,
+color='y',
+label='Noise Wall')
+
+plt.xlabel('Task')
+plt.ylabel('dB')
+plt.title('SNR vs Noise Wall')
+plt.xticks(index + bar_width, TASKS)
+plt.legend()
+
+plt.tight_layout()
+plt.show()
 
