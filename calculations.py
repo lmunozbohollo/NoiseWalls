@@ -119,11 +119,3 @@ def calcNoiseWall(participant,eeg_signal):
     NoiseWall = 10*math.log10(NoiseWall)
     return NoiseWall
 
-rho_vep = calcRho('004', 'rawvep')
-NWall_vep = calcNoiseWall('004', 'rawvep')
-
-rho_p300 = calcRho('004', 'rawp300')
-NWall_p300 = calcNoiseWall('004', 'rawp300')
-
-rho_jawclench = calcRho('004', 'jawclench')
-NWall_jawclench = calcNoiseWall('004', 'jawclench')
