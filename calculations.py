@@ -3,6 +3,9 @@
 Created on Wed Feb  9 19:42:23 2022
 
 @author: luciamb
+
+The dataset used for this script is: http://researchdata.gla.ac.uk/1258/
+
 """
 
 from Filter_signals import Evoked_potentials
@@ -15,7 +18,7 @@ import math
 
 
 def calcVarSignal(participant,eeg_signal):
-    if eeg_signal in ("rawvep", "rawp300"):
+    if eeg_signal in ('rawvep', 'rawp300'):
         evoked_potential = Evoked_potentials(participant,eeg_signal)
         eeg = evoked_potential.eeg
         
@@ -27,7 +30,7 @@ def calcVarSignal(participant,eeg_signal):
     return var_signal
 
     
-def plotPSD(participant,ep):
+def findSignal(participant,ep):
     evoked_potential = Evoked_potentials(participant,ep)
     eeg = evoked_potential.eeg
     
@@ -35,39 +38,37 @@ def plotPSD(participant,ep):
     win = 4 * Evoked_potentials.Fs
     freqs, psd = signal.welch(eeg, Evoked_potentials.Fs, nperseg=win)
     
-    # Plot the power spectrum
-    plt.figure('PSD'+ep, figsize=(8, 4))
-    plt.plot(freqs, psd, color='k', lw=2)
-    plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Power spectral density ($V^2$ / Hz)')
-    plt.title("Welch's periodogram")
+    # # Plot the power spectrum
+    # plt.figure('PSD'+ep, figsize=(8, 4))
+    # plt.plot(freqs, psd, color='k', lw=2)
+    # plt.xlabel('Frequency (Hz)')
+    # plt.ylabel('Power spectral density ($V^2$ / Hz)')
+    # plt.title("Welch's periodogram")
     psd_peak = max(psd)
     return psd_peak
 
+def peakMagnitude(participant,ep):
+    evoked_potential = Evoked_potentials(participant,ep)
+    time,avg = evoked_potential.get_averaged_ep()
+    
+    #plt.plot(time,avg)
+    amplitude = max(avg)
+    return amplitude
+    
+p300 = peakMagnitude('004', 'rawp300')
+
 def findSNR(participant,eeg_signal):
     #SNR = 10e-6**2 / calcVarSignal(participant,eeg_signal)
-    SNR = 10**2 / calcVarSignal(participant,eeg_signal)
+    SNR = findSignal('004','rawp300')**2 / calcVarSignal(participant,eeg_signal)
+    #SNR = peakMagnitude('004', 'rawp300')**2 / calcVarSignal(participant, eeg_signal)
     SNR = 10*math.log10(SNR)
     return SNR
 
-# the difference between both will be the power of the voluntary eeg
-#power_p300 = plotPSD("004","rawp300")
-#power_vep = plotPSD("004","rawvep")
-#signal_value = power_p300 - power_vep
-
-
-#SNR_vep = signal_value**2 / noise_vep**2
-#SNR_p300 = signal_value**2 / noise_p300**2
-SNR_vep = findSNR('004','rawvep')
-SNR_p300 = findSNR('004','rawp300')
-
-
-#SNR_jawclench = signal_value**2 / noise_jawclench**2
-SNR_jawclench = findSNR('004','jawclench')
-
+#########
+# find the Noise Wall
 
 def calcMaxVar(participant,eeg_signal):
-    if eeg_signal in ("rawvep", "rawp300"):
+    if eeg_signal in ('rawvep', 'rawp300'):
         evoked_potential = Evoked_potentials(participant,eeg_signal)
         eeg = evoked_potential.eeg
         Fs = evoked_potential.Fs
@@ -77,17 +78,20 @@ def calcMaxVar(participant,eeg_signal):
         eeg = wanted_task.ch1
         Fs = wanted_task.Fs
     
-    #calculate moving variance and keep median value
+    #calculate moving variance and keep max value
     var_list = []
-    for i in range(len(eeg)):
-        var = np.var(eeg[i:(Fs*2)+i])
+    for i in range(round(len(eeg)/2)):
+        var = np.var(eeg[2*Fs*i:Fs*2*(i+1)])
         var_list.append(var)
         
-    theta_max = np.median(var_list)
+    theta_max = max(var_list)
+    #plt.plot(var_list)
     return theta_max
 
+maxval = calcMaxVar('004', 'rawp300')
+
 def calcMinVar(participant,eeg_signal):
-    if eeg_signal in ("rawvep", "rawp300"):
+    if eeg_signal in ('rawvep', 'rawp300'):
         evoked_potential = Evoked_potentials(participant,eeg_signal)
         eeg = evoked_potential.eeg
         Fs = evoked_potential.Fs
@@ -99,9 +103,9 @@ def calcMinVar(participant,eeg_signal):
     
     #calculate moving variance and keep min value
     var_list = []
-    for i in range(len(eeg)):
-        var = np.var(eeg[i:(Fs*2)+i])
-        # since the first 1500 values are 0, the stds at the start will be 0
+    for i in range(round(len(eeg)/2)):
+        var = np.var(eeg[2*Fs*i:Fs*2*(i+1)])
+        # since the first values are 0, the variances at the start will be 0
         # we want to remove these
         if var > 0:
             var_list.append(var)
@@ -109,6 +113,7 @@ def calcMinVar(participant,eeg_signal):
     theta_min = min(var_list)
     return theta_min
 
+minval = calcMinVar('004', 'rawp300')
 
 def calcRho(participant,eeg_signal):
     rho = np.sqrt(calcMaxVar(participant,eeg_signal) / calcMinVar(participant,eeg_signal))

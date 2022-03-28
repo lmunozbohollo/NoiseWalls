@@ -3,6 +3,9 @@
 Created on Wed Feb  2 10:35:56 2022
 
 @author: luciamb
+
+To be used on the following dataset: http://researchdata.gla.ac.uk/1258/
+
 """
 
 import numpy as np
