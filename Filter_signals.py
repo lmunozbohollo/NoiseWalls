@@ -12,6 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.signal as signal
 
+dir = 'EEG_recordings/'
 
 class Evoked_potentials:
     EPs = ["rawvep", "rawp300"]
@@ -20,7 +21,7 @@ class Evoked_potentials:
     def __init__(self,_participant,_ep,do_filter_data = True):
         self.participant = _participant
         self.ep = _ep
-        fullpath = 'participant'+self.participant+'/'+self.ep+'.tsv'
+        fullpath = dir+'participant'+self.participant+'/'+self.ep+'.tsv'
         #fullpath = "participant{}/{}.tsv".format(self.participant,self.EPs[_ep])
         self.data = np.loadtxt(fullpath)
         self.t = np.linspace(0,len(self.data)/self.Fs,len(self.data))
@@ -77,7 +78,7 @@ class tasks_eeg:
     def __init__(self,_participant,_task,filterData=True):
         self.participant = _participant
         self.task = _task
-        path = 'participant'+self.participant+'/'+self.task+'.tsv'
+        path = dir+'participant'+self.participant+'/'+self.task+'.tsv'
         self.data = np.loadtxt(path)
         
         self.t = np.linspace(0,len(self.data)/self.Fs,len(self.data))
