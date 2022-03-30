@@ -38,12 +38,6 @@ def findSignal(participant,ep):
     win = 4 * Evoked_potentials.Fs
     freqs, psd = signal.welch(eeg, Evoked_potentials.Fs, nperseg=win)
     
-    # # Plot the power spectrum
-    # plt.figure('PSD'+ep, figsize=(8, 4))
-    # plt.plot(freqs, psd, color='k', lw=2)
-    # plt.xlabel('Frequency (Hz)')
-    # plt.ylabel('Power spectral density ($V^2$ / Hz)')
-    # plt.title("Welch's periodogram")
     psd_peak = max(psd)
     return psd_peak
 
@@ -55,17 +49,15 @@ def peakMagnitude(participant,ep):
     amplitude = max(avg)
     return amplitude
     
-p300 = peakMagnitude('004', 'rawp300')
+#p300 = peakMagnitude('004', 'rawp300')
 
 def findSNR(participant,eeg_signal):
     #SNR = 10e-6**2 / calcVarSignal(participant,eeg_signal)
-    SNR = findSignal('004','rawp300')**2 / calcVarSignal(participant,eeg_signal)
+    SNR = findSignal(participant,'rawp300')**2 / calcVarSignal(participant,eeg_signal)
     #SNR = peakMagnitude('004', 'rawp300')**2 / calcVarSignal(participant, eeg_signal)
     SNR = 10*math.log10(SNR)
     return SNR
 
-#########
-# find the Noise Wall
 
 def calcMaxVar(participant,eeg_signal):
     if eeg_signal in ('rawvep', 'rawp300'):
@@ -88,7 +80,6 @@ def calcMaxVar(participant,eeg_signal):
     #plt.plot(var_list)
     return theta_max
 
-maxval = calcMaxVar('004', 'rawp300')
 
 def calcMinVar(participant,eeg_signal):
     if eeg_signal in ('rawvep', 'rawp300'):
@@ -105,7 +96,7 @@ def calcMinVar(participant,eeg_signal):
     var_list = []
     for i in range(round(len(eeg)/2)):
         var = np.var(eeg[2*Fs*i:Fs*2*(i+1)])
-        # since the first values are 0, the variances at the start will be 0
+        # since the first 1500 values are 0, the stds at the start will be 0
         # we want to remove these
         if var > 0:
             var_list.append(var)
@@ -113,7 +104,6 @@ def calcMinVar(participant,eeg_signal):
     theta_min = min(var_list)
     return theta_min
 
-minval = calcMinVar('004', 'rawp300')
 
 def calcRho(participant,eeg_signal):
     rho = np.sqrt(calcMaxVar(participant,eeg_signal) / calcMinVar(participant,eeg_signal))

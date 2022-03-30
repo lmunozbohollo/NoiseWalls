@@ -5,14 +5,12 @@ Created on Wed Feb  2 10:35:56 2022
 @author: luciamb
 
 To be used on the following dataset: http://researchdata.gla.ac.uk/1258/
-
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.signal as signal
-
-dir = 'EEG_recordings/'
+import sys
 
 class Evoked_potentials:
     EPs = ["rawvep", "rawp300"]
@@ -21,8 +19,7 @@ class Evoked_potentials:
     def __init__(self,_participant,_ep,do_filter_data = True):
         self.participant = _participant
         self.ep = _ep
-        fullpath = dir+'participant'+self.participant+'/'+self.ep+'.tsv'
-        #fullpath = "participant{}/{}.tsv".format(self.participant,self.EPs[_ep])
+        fullpath = "EEG_recordings/participant{}/{}.tsv".format(str(self.participant).zfill(3),self.ep)
         self.data = np.loadtxt(fullpath)
         self.t = np.linspace(0,len(self.data)/self.Fs,len(self.data))
         self.eeg = self.data[:,0]*1e6
@@ -78,7 +75,7 @@ class tasks_eeg:
     def __init__(self,_participant,_task,filterData=True):
         self.participant = _participant
         self.task = _task
-        path = dir+'participant'+self.participant+'/'+self.task+'.tsv'
+        path = "EEG_recordings/participant{}/{}.tsv".format(str(self.participant).zfill(3),self.task)
         self.data = np.loadtxt(path)
         
         self.t = np.linspace(0,len(self.data)/self.Fs,len(self.data))
