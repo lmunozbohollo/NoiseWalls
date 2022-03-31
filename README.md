@@ -13,6 +13,8 @@ The files will produce the following outputs when run indenpendently:
 
 * 'snr.py' : Calls p300.py to get the signal power. Calculates the variance of each raw signal. Prints out a table with the snr values for each task.
 
+* 'do_stats.py' : Averages noise wall and snr of all participants. Shows values on a barplot.
+
 
 ## Packages
 
