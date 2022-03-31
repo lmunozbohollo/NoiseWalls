@@ -31,7 +31,7 @@ if __name__ == "__main__":
 SNRs = []
 NWs = []
 
-for participant in range(1,5):
+for participant in range(1,21):
     for task in TASKS:
         SNR = findSNR(participant,task)
         NW = calcNoiseWall(participant,task)
@@ -40,12 +40,12 @@ for participant in range(1,5):
         NWs.append(NW)
     
 SNRs = np.matrix(SNRs)
-SNRs = SNRs.reshape((10,4))
+SNRs = SNRs.reshape((10,20))
 SNRs = np.mean(SNRs, axis=1)
 
 
 NWs = np.matrix(NWs)
-NWs = NWs.reshape((10,4))
+NWs = NWs.reshape((10,20))
 NWs = np.mean(NWs, axis=1)
 
 
