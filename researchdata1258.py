@@ -63,7 +63,8 @@ class Evoked_potentials:
             if ((ob+self.navg) < len(self.eeg)) and (ob > self.initial_samples_to_ignore):
                 self.avg = self.avg + self.eeg[int(ob):int(ob+self.navg)]
                 n = n + 1
-        
+
+        self.avg = self.avg / n
         avg = self.avg
         
         time = np.linspace(0,self.navg/self.Fs,self.navg) * 1000
