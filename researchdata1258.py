@@ -45,6 +45,14 @@ class Evoked_potentials:
         b100,a100 = signal.butter(4,[98/self.Fs*2,102/self.Fs*2],'stop')
         self.eeg = signal.lfilter(b100,a100,self.eeg);
         
+        # Uncomment for 20Hz cutoff
+        #bLow,aLow = signal.butter(4,20/self.Fs*2,'low')
+        #self.eeg = signal.lfilter(bLow,aLow,self.eeg);
+        
+        # Uncomment for 100Hz cutoff
+        #bLow,aLow = signal.butter(4,100/self.Fs*2,'low')
+        #self.eeg = signal.lfilter(bLow,aLow,self.eeg);
+        
         ign = self.initial_samples_to_ignore
         self.eeg[0:ign] = 0 # to not plot first few seconds
         
@@ -101,7 +109,17 @@ class tasks_eeg:
         b150,a150 = signal.butter(4,[148/self.Fs*2,152/self.Fs*2],'stop')
         self.ch1 = signal.lfilter(b150,a150,self.ch1);
         self.ch2 = signal.lfilter(b150,a150,self.ch2);
+        
+        # Uncomment for 20Hz cutoff
+        #bLow,aLow = signal.butter(4,20/self.Fs*2,'low')
+        #self.ch1 = signal.lfilter(bLow,aLow,self.ch1);
+        #self.ch2 = signal.lfilter(bLow,aLow,self.ch2);
 
+        # Uncomment for 100Hz cutoff
+        #bLow,aLow = signal.butter(4,100/self.Fs*2,'low')
+        #self.ch1 = signal.lfilter(bLow,aLow,self.ch1);
+        #self.ch2 = signal.lfilter(bLow,aLow,self.ch2);
+        
         # 2secs muted
         self.ch1[0:1000] = 0
         self.ch2[0:1000] = 0
