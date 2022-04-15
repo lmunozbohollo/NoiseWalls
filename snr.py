@@ -4,7 +4,7 @@ Created on Wed Mar 30 17:00:34 2022
 
 @author: luciamb
 
-Calculates the Noise Wall of each task for a participant
+Calculates the SNR of each task for a participant
 
 """
 

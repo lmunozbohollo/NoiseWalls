@@ -28,7 +28,8 @@ def peakMagnitude(participant,ep):
     max_val = avg[0]
     max_val_idx = 0
     
-    for i in range(len(avg)):
+    #for i in range(len(avg)):
+    for i in range(75,125):
         if avg[i] > max_val:
             max_val = avg[i]
             max_val_idx = i
@@ -48,7 +49,7 @@ def signalPwr(participant,ep):
     
     max_val = avg[0]
     
-    for i in range(len(avg)):
+    for i in range(75,125):
         if avg[i] > max_val:
             max_val = avg[i]
         

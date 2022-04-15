@@ -38,8 +38,8 @@ def calcMaxVar(participant,eeg_signal):
     
     #calculate moving variance and keep max value
     var_list = []
-    for i in range(round(len(eeg)/2)):
-        var = np.var(eeg[2*Fs*i:Fs*2*(i+1)])
+    for i in range(round(len(eeg)/5)):
+        var = np.var(eeg[5*Fs*i:Fs*5*(i+1)])
         var_list.append(var)
         
     theta_max = max(var_list)
@@ -66,8 +66,8 @@ def calcMinVar(participant,eeg_signal):
     
     #calculate moving variance and keep min value
     var_list = []
-    for i in range(round(len(eeg)/2)):
-        var = np.var(eeg[2*Fs*i:Fs*2*(i+1)])
+    for i in range(round(len(eeg)/5)):
+        var = np.var(eeg[5*Fs*i:Fs*5*(i+1)])
         # since the first 1500 values are 0, the stds at the start will be 0
         # we want to remove these
         if var > 0:
