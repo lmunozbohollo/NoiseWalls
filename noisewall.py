@@ -18,7 +18,7 @@ from researchdata1258 import tasks_eeg
 
 # First we find the max and min variance of each task
 
-def calcMaxVar(participant,eeg_signal):
+def calcMinMaxVar(participant,eeg_signal):
     '''
     Here we use a sliding window spanning 2 seconds to find the maximum variance
     
@@ -35,46 +35,16 @@ def calcMaxVar(participant,eeg_signal):
         wanted_task = tasks_eeg(participant,eeg_signal)
         eeg = wanted_task.ch1
         Fs = wanted_task.Fs
-    
+
+    winSize = 1000
     #calculate moving variance and keep max value
     var_list = []
-    for i in range(round(len(eeg)/5)):
-        var = np.var(eeg[5*Fs*i:Fs*5*(i+1)])
-        var_list.append(var)
+    for i in range(0,len(eeg)-winSize-1,Fs*2):
+        v = np.var(eeg[i:i+winSize])
+        if v > 0:
+            var_list.append(v)
         
-    theta_max = max(var_list)
-    return theta_max
-
-
-def calcMinVar(participant,eeg_signal):
-    '''
-    Here we use a sliding window spanning 2 seconds to find the minimum variance
-    
-    Returns: min variance (theta_min)
-    
-    '''
-    
-    if eeg_signal in ('rawvep', 'rawp300'):
-        evoked_potential = Evoked_potentials(participant,eeg_signal)
-        eeg = evoked_potential.eeg
-        Fs = evoked_potential.Fs
-        
-    else:
-        wanted_task = tasks_eeg(participant,eeg_signal)
-        eeg = wanted_task.ch1
-        Fs = wanted_task.Fs
-    
-    #calculate moving variance and keep min value
-    var_list = []
-    for i in range(round(len(eeg)/5)):
-        var = np.var(eeg[5*Fs*i:Fs*5*(i+1)])
-        # since the first 1500 values are 0, the stds at the start will be 0
-        # we want to remove these
-        if var > 0:
-            var_list.append(var)
-            
-    theta_min = min(var_list)
-    return theta_min
+    return min(var_list),max(var_list)
 
 
 # Find the noise uncertainty, rho
@@ -86,8 +56,8 @@ def calcRho(participant,eeg_signal):
     Returns: rho
     
     '''
-    
-    rho = np.sqrt(calcMaxVar(participant,eeg_signal) / calcMinVar(participant,eeg_signal))
+    mi,ma = calcMinMaxVar(participant,eeg_signal)
+    rho = np.sqrt(ma / mi)
     return rho
 
 
@@ -100,8 +70,9 @@ def calcNoiseWall(participant,eeg_signal):
     Returns: NoiseWall
     
     '''
-    
-    NoiseWall = calcRho(participant,eeg_signal) - (1 / calcRho(participant,eeg_signal))
+
+    rho = calcRho(participant,eeg_signal)
+    NoiseWall = rho - (1 / rho)
     NoiseWall = 10*math.log10(NoiseWall)
     return NoiseWall
 
