@@ -22,7 +22,7 @@ def calcMinMaxVar(participant,eeg_signal):
     '''
     Here we use a sliding window spanning 2 seconds to find the maximum variance
     
-    Returns: max variance (theta_max)
+    Returns: min,max variance
     
     '''
     
@@ -36,10 +36,10 @@ def calcMinMaxVar(participant,eeg_signal):
         eeg = wanted_task.ch1
         Fs = wanted_task.Fs
 
-    winSize = 1000
+    winSize = Fs*2
     #calculate moving variance and keep max value
     var_list = []
-    for i in range(0,len(eeg)-winSize-1,Fs*2):
+    for i in range(0,len(eeg)-winSize-1,winSize):
         v = np.var(eeg[i:i+winSize])
         if v > 0:
             var_list.append(v)
